@@ -7,7 +7,6 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 using nlohmann::json;
-//Структура данных, нужная для создания запросов
 struct
 {
   struct event_base *base;
@@ -19,22 +18,32 @@ void terminate([[maybe_unused]] int exit_code)
 {
   client.isRunning = false;
 }
-
+//Если запрос успешен
 void http_request_done(struct evhttp_request *req, void *arg)
 {
+  //Проверяем успешен ли он)))
   if(req->response_code != HTTP_OK)
   {
+    //Если ошибка - пишем номер
     std::cout << "response code: " << req->response_code << std::endl;
     //<< ", text: " << req->response_code_line << std::endl;
     event_base_loopbreak((struct event_base *)arg);
     return;
   }
+  //Считаем длину буффера ответа
   size_t len = evbuffer_get_length(req->input_buffer);
+  //Выделяем память (МОЖЕТ СПРОСИТЬ!!!!)
   char *str = static_cast<char *>(malloc(len + 1));
+  //Копируем из буффера ответа в выделенную память
   evbuffer_copyout(req->input_buffer, str, len);
   str[len] = '\0';
   try {
+    //Парсим в json
     json response = json::parse(str);
+    //Выводим ответ сервера в консоль в виде
+    //Perhaps you meant:
+    //  СЛОВО
+    // еЩЕ СЛОВО
     std::cout << "Perhaps you meant: " << std::endl;
     for (auto &elm : response["suggestions"])
       std::cout << "\t" << elm["text"].get<std::string>() << std::endl;
