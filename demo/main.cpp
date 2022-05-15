@@ -1,4 +1,4 @@
-// Copyright 2022 wm8
+// Copyright 2022 vlados2003
 #include <csignal>
 #include <unistd.h>
 #include <evhttp.h>
